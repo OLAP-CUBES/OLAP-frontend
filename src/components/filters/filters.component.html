@@ -1,0 +1,105 @@
+@if (loading) {
+<p-progressSpinner
+  class="w-12 h-12"
+  strokeWidth="8"
+  fill="#EEEEEE"
+></p-progressSpinner>
+} @else {
+<form [formGroup]="form" class="card w-3 gap-2 flex flex-column justify-center">
+  <p-float-label class="w-full md:w-56" variant="on">
+    <p-select
+      class="w-full"
+      id="fact"
+      formControlName="fact"
+      [showClear]="true"
+      [options]="facts"
+      (onChange)="onValueChange('fact', $event)"
+    >
+    </p-select>
+    <label for="fact">FACT</label>
+  </p-float-label>
+  <p-float-label class="w-full md:w-56" variant="on">
+    <p-select
+      class="w-full"
+      id="x"
+      optionLabel="label"
+      formControlName="x"
+      [showClear]="true"
+      [options]="axisOptions"
+      (onChange)="onValueChange('x', $event)"
+    >
+    </p-select>
+    <label for="x">X AXIS</label>
+  </p-float-label>
+  <p-float-label class="w-full md:w-56" variant="on">
+    <p-select
+      class="w-full"
+      id="y"
+      optionLabel="label"
+      formControlName="y"
+      [showClear]="true"
+      [options]="axisOptions"
+      (onChange)="onValueChange('y', $event)"
+    >
+    </p-select
+    ><label for="y">Y AXIS</label>
+  </p-float-label>
+  <p-float-label class="w-full md:w-56" variant="on">
+    <p-select
+      class="w-full"
+      id="z"
+      optionLabel="label"
+      formControlName="z"
+      [showClear]="true"
+      [options]="axisOptions"
+      (onChange)="onValueChange('z', $event)"
+    >
+    </p-select
+    ><label for="z">Z AXIS</label></p-float-label
+  >
+  <p-float-label class="w-full md:w-56" variant="on">
+    <p-select
+      class="w-full"
+      id="operation"
+      optionLabel="label"
+      formControlName="operation"
+      [showClear]="true"
+      [options]="operationOptions"
+      (onChange)="onValueChange('operation', $event)"
+    >
+    </p-select
+    ><label for="operation">AGGREGATOR</label></p-float-label
+  >
+  <p-float-label class="w-full md:w-56" variant="on">
+    <p-select
+      id="field"
+      class="w-full"
+      optionLabel="label"
+      formControlName="field"
+      [showClear]="true"
+      [options]="axisOptions"
+      (onChange)="onValueChange('field', $event)"
+    >
+    </p-select
+    ><label for="field">AGGREGATION FIELD</label>
+  </p-float-label>
+  @if (form.value.operation?.value === 'COUNT'){
+  <p-float-label class="w-full md:w-56" variant="on">
+    <input
+      id="value"
+      pInputText
+      class="w-full"
+      optionLabel="label"
+      formControlName="value"
+    />
+    <label for="field">AGGREGATION VALUE</label>
+  </p-float-label>
+  }
+  <p-button
+    class="align-self-end"
+    label="Apply"
+    [disabled]="form.invalid"
+    (onClick)="onFormSubmit()"
+  ></p-button>
+</form>
+}
