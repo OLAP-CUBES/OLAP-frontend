@@ -3,7 +3,7 @@
   [operationOptions]="operationOptions"
   [facts]="facts"
   [loading]="filterDataLoading"
-  (onSubmit)="initTable($event)"
+  (onSubmit)="initTable($event, true)"
 >
 </app-filters>
 
@@ -39,9 +39,38 @@
     <span class="m-3">Current Dimension:</span>
     <p-select
       class="m-3"
+      [(ngModel)]="currentDimension"
       [options]="dimensions"
       (onChange)="onDimensionChange($event)"
     ></p-select>
+  </div>
+
+  <div
+    class="w-full flex flex-column justify-content-end align-items-center flex-wrap"
+  >
+    <span class="m-3">Pivot:</span>
+    <div class="flex">
+      <p-button
+        icon="pi pi-arrow-up"
+        (onClick)="onPivot('vertical')"
+      ></p-button>
+    </div>
+    <div class="flex gap-6">
+      <p-button
+        icon="pi pi-arrow-left"
+        (onClick)="onPivot('horizontal')"
+      ></p-button>
+      <p-button
+        icon="pi pi-arrow-right"
+        (onClick)="onPivot('horizontal')"
+      ></p-button>
+    </div>
+    <div class="flex">
+      <p-button
+        icon="pi pi-arrow-down"
+        (onClick)="onPivot('vertical')"
+      ></p-button>
+    </div>
   </div>
 </section>
 } @else if (this.tableDataLoading) {

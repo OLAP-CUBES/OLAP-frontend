@@ -42,6 +42,8 @@ export class FiltersComponent implements OnInit {
 
   isFormCorrect = false;
 
+  filteredOptions: Option[] = [];
+
   previousFormValue: {
     x?: Option | null;
     y?: Option | null;
@@ -84,18 +86,18 @@ export class FiltersComponent implements OnInit {
       field: null,
       value: null,
     });
+
+    this.filteredOptions = this.axisOptions;
   }
 
   onValueChange(from: string, event: SelectChangeEvent): void {
-    const { x, y, z, operation } = this.form.value;
+    const { x, y, z, field } = this.form.value;
 
     if (from === 'operation' && event.value['value'] === 'COUNT') {
       this.form.get('field')?.setValidators([Validators.required]);
     } else if (from === 'operation') {
       this.form.get('field')?.clearValidators();
     }
-
-    //this.previousFormValue = this.form.value;
   }
 
   onFormSubmit(): void {
@@ -109,5 +111,37 @@ export class FiltersComponent implements OnInit {
       field: field!.value,
       value: value ?? undefined,
     });
+  }
+
+  isValueAvailable(from: string, option: Option): boolean {
+    const { fact, x, y, z, operation, field, value } = this.form.value;
+    switch (from) {
+      case 'x':
+        return (
+          option.value !== y?.value &&
+          option.value !== z?.value &&
+          option.value !== field?.value
+        );
+      case 'y':
+        return (
+          option.value !== x?.value &&
+          option.value !== z?.value &&
+          option.value !== field?.value
+        );
+      case 'z':
+        return (
+          option.value !== x?.value &&
+          option.value !== y?.value &&
+          option.value !== field?.value
+        );
+      case 'field':
+        return (
+          option.value !== x?.value &&
+          option.value !== z?.value &&
+          option.value !== y?.value
+        );
+      default:
+        return true;
+    }
   }
 }

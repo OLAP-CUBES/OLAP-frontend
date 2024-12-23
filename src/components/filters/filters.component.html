@@ -25,7 +25,7 @@
       optionLabel="label"
       formControlName="x"
       [showClear]="true"
-      [options]="axisOptions"
+      [options]="filteredOptions"
       (onChange)="onValueChange('x', $event)"
     >
     </p-select>
@@ -38,7 +38,7 @@
       optionLabel="label"
       formControlName="y"
       [showClear]="true"
-      [options]="axisOptions"
+      [options]="filteredOptions"
       (onChange)="onValueChange('y', $event)"
     >
     </p-select
@@ -51,7 +51,7 @@
       optionLabel="label"
       formControlName="z"
       [showClear]="true"
-      [options]="axisOptions"
+      [options]="filteredOptions"
       (onChange)="onValueChange('z', $event)"
     >
     </p-select
@@ -77,7 +77,7 @@
       optionLabel="label"
       formControlName="field"
       [showClear]="true"
-      [options]="axisOptions"
+      [options]="filteredOptions"
       (onChange)="onValueChange('field', $event)"
     >
     </p-select

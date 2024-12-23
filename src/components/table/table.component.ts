@@ -9,6 +9,8 @@ import { DataField } from '../../services/data-structure';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TableContent } from './table-content';
 import { SelectChangeEvent, SelectModule } from 'primeng/select';
+import { ButtonModule } from 'primeng/button';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 export interface Option {
   label: string;
   value: string;
@@ -22,6 +24,8 @@ export interface Option {
     FiltersComponent,
     ProgressSpinnerModule,
     SelectModule,
+    ButtonModule,
+    FormsModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -99,12 +103,11 @@ export class TableComponent implements OnInit, OnDestroy {
 
   onDimensionChange(event: SelectChangeEvent): void {
     this.currentDimension = event.value;
-    console.log(this.currentDimension);
 
     this.parseTableData(this.currentContent);
   }
 
-  initTable(payload: RequestPayload): void {
+  initTable(payload: RequestPayload, redoDimension: boolean = false): void {
     this.tableDataLoading = true;
     this.currentPayload = payload;
 
@@ -120,12 +123,37 @@ export class TableComponent implements OnInit, OnDestroy {
       )
       .subscribe((res) => {
         this.currentContent = res;
-        this.parseTableData(res, true);
+        this.parseTableData(res, redoDimension);
       });
+  }
+
+  onPivot(direction: string): void {
+    if (direction == 'horizontal') {
+      var newPayload: RequestPayload = {
+        fact: this.currentPayload.fact,
+        x: this.currentPayload.z,
+        y: this.currentPayload.y,
+        z: this.currentPayload.x,
+        field: this.currentPayload.field,
+        operation: this.currentPayload.operation,
+      };
+    } else {
+      var newPayload: RequestPayload = {
+        fact: this.currentPayload.fact,
+        x: this.currentPayload.x,
+        y: this.currentPayload.z,
+        z: this.currentPayload.y,
+        field: this.currentPayload.field,
+        operation: this.currentPayload.operation,
+      };
+    }
+
+    this.initTable(newPayload, true);
   }
 
   private parseTableData(res: TableContent[], initial: boolean = false): void {
     this.dimensions = res.map((dim) => dim.z);
+    console.log(this.dimensions);
 
     if (initial) {
       this.currentDimension = this.dimensions[0];
