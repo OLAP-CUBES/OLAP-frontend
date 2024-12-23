@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FiltersComponent } from '../filters/filters.component';
 import { RequestPayload } from './request-payload';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil, tap } from 'rxjs';
+import { catchError, Subject, takeUntil, tap } from 'rxjs';
 import { TableService } from '../../services/table.service';
 import { Field, TableQuery } from '../../services/table-query';
 import { DataField } from '../../services/data-structure';
@@ -10,7 +10,10 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TableContent } from './table-content';
 import { SelectChangeEvent, SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { Ripple } from 'primeng/ripple';
+import { Toast } from 'primeng/toast';
 export interface Option {
   label: string;
   value: string;
@@ -26,7 +29,10 @@ export interface Option {
     SelectModule,
     ButtonModule,
     FormsModule,
+    Toast,
+    ButtonModule,
   ],
+  providers: [MessageService],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
@@ -57,16 +63,29 @@ export class TableComponent implements OnInit, OnDestroy {
   headers: string[] = [];
   rows: (number | string | null)[][] = [];
 
-  constructor(private readonly _tableService: TableService) {}
+  constructor(
+    private readonly _tableService: TableService,
+    private readonly _messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
-    this.test();
     this.filterDataLoading = true;
     this._tableService
       .getDataStructure()
       .pipe(
         tap(() => {
           this.filterDataLoading = false;
+        }),
+        catchError((err) => {
+          this._messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail:
+              err.error.message +
+              '.\n Unable to fetch data structure.\n Please try again later.',
+            life: 3000,
+          });
+          return [];
         }),
         takeUntil(this._destroy$)
       )
@@ -78,22 +97,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
         this.dataFields = data.fields;
         this.facts = data.facts;
-        console.log(data);
       });
-  }
-  test(): void {
-    this._tableService.test().subscribe((res) => {
-      this.currentPayload = {
-        fact: 'person',
-        x: 'firstName',
-        y: 'health',
-        z: 'job',
-        field: 'year',
-        operation: 'AVG',
-      };
-      this.currentContent = res;
-      this.parseTableData(res, true);
-    });
   }
 
   ngOnDestroy(): void {
@@ -119,6 +123,18 @@ export class TableComponent implements OnInit, OnDestroy {
         tap(() => {
           this.tableDataLoading = false;
         }),
+        catchError((err) => {
+          this._messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail:
+              err.error.message +
+              '.\n Likely an incorrectly filled out form.\n A field may only be used once.',
+            life: 3000,
+          });
+          this.tableDataLoading = false;
+          return [];
+        }),
         takeUntil(this._destroy$)
       )
       .subscribe((res) => {
@@ -129,23 +145,15 @@ export class TableComponent implements OnInit, OnDestroy {
 
   onPivot(direction: string): void {
     if (direction == 'horizontal') {
-      var newPayload: RequestPayload = {
-        fact: this.currentPayload.fact,
-        x: this.currentPayload.z,
-        y: this.currentPayload.y,
-        z: this.currentPayload.x,
-        field: this.currentPayload.field,
-        operation: this.currentPayload.operation,
-      };
+      var newPayload: RequestPayload = { ...this.currentPayload };
+      newPayload.x = this.currentPayload.z;
+      newPayload.y = this.currentPayload.y;
+      newPayload.z = this.currentPayload.x;
     } else {
-      var newPayload: RequestPayload = {
-        fact: this.currentPayload.fact,
-        x: this.currentPayload.x,
-        y: this.currentPayload.z,
-        z: this.currentPayload.y,
-        field: this.currentPayload.field,
-        operation: this.currentPayload.operation,
-      };
+      var newPayload: RequestPayload = { ...this.currentPayload };
+      newPayload.x = this.currentPayload.x;
+      newPayload.y = this.currentPayload.z;
+      newPayload.z = this.currentPayload.y;
     }
 
     this.initTable(newPayload, true);
@@ -153,7 +161,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   private parseTableData(res: TableContent[], initial: boolean = false): void {
     this.dimensions = res.map((dim) => dim.z);
-    console.log(this.dimensions);
 
     if (initial) {
       this.currentDimension = this.dimensions[0];
@@ -168,7 +175,6 @@ export class TableComponent implements OnInit, OnDestroy {
         ...row.map((cell) => cell['result']),
       ];
     }) as (number | string | null)[][];
-    console.log(rows);
   }
 
   private prepareRequestBody(payload: RequestPayload): TableQuery {
