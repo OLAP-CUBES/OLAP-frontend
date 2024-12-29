@@ -41,6 +41,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   filterDataLoading = false;
   tableDataLoading = false;
+  collapsed = true;
 
   dataFields: DataField[] = [];
   facts: string[] = [];
@@ -105,6 +106,10 @@ export class TableComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
+  onToggleCollapse(): void {
+    this.collapsed = !this.collapsed;
+  }
+
   onDimensionChange(event: SelectChangeEvent): void {
     this.currentDimension = event.value;
 
@@ -112,6 +117,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   initTable(payload: RequestPayload, redoDimension: boolean = false): void {
+    this.headers = [];
     this.tableDataLoading = true;
     this.currentPayload = payload;
 

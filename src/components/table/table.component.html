@@ -14,7 +14,7 @@
   <div class="table-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
-        <tr>
+        <tr class="highlight">
           <th></th>
           @for (header of headers; track $index) {
           <th>{{ header }}</th>
@@ -23,28 +23,39 @@
       </thead>
     </table>
   </div>
-  <div class="table-content">
+  <div class="table-content" [ngClass]="{ collapsed: collapsed }">
     <table cellpadding="0" cellspacing="0" border="0">
       <tbody>
         @for (row of rows; track $index) {
         <tr>
           @for (value of row; track $index) {
-          <td [ngClass]="{ highlight: $index == 0 }">{{ value ?? "-" }}</td>
+          <td [ngClass]="{ highlight: $index == 0 }">
+            {{ value ?? "-" }}
+          </td>
           }
         </tr>
         }
       </tbody>
     </table>
   </div>
+</section>
 
-  <div class="w-full flex justify-content-end align-items-center flex-wrap">
-    <span class="m-3">Current Dimension:</span>
-    <p-select
-      class="m-3"
-      [(ngModel)]="currentDimension"
-      [options]="dimensions"
-      (onChange)="onDimensionChange($event)"
-    ></p-select>
+<div class="controls">
+  <div class="w-full flex justify-content-between align-items-center flex-wrap">
+    <p-button
+      icon="pi pi-arrow-up-right-and-arrow-down-left-from-center"
+      (onClick)="onToggleCollapse()"
+    >
+    </p-button>
+    <div>
+      <span class="m-3">Current Dimension:</span>
+      <p-select
+        class="m-3"
+        [(ngModel)]="currentDimension"
+        [options]="dimensions"
+        (onChange)="onDimensionChange($event)"
+      ></p-select>
+    </div>
   </div>
 
   <div
@@ -76,7 +87,7 @@
       </div>
     </div>
   </div>
-</section>
+</div>
 } @else if (this.tableDataLoading) {
 <p-progressSpinner class="w-12 h-12" strokeWidth="8"></p-progressSpinner>
 }

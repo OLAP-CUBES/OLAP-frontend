@@ -13,7 +13,7 @@ export class TableService {
 
   getTableContent(body: TableQuery): Observable<TableContent[]> {
     return this._http.post<TableContent[]>(
-      'http://localhost:4200/person/table2',
+      'http://localhost:4200/person/table',
       body
     );
   }
