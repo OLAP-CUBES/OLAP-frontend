@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Ripple } from 'primeng/ripple';
 import { Toast } from 'primeng/toast';
+import { RoundPipe } from '../../pipes/round.pipe';
 export interface Option {
   label: string;
   value: string;
@@ -31,6 +32,7 @@ export interface Option {
     FormsModule,
     Toast,
     ButtonModule,
+    RoundPipe,
   ],
   providers: [MessageService],
   templateUrl: './table.component.html',
@@ -171,10 +173,12 @@ export class TableComponent implements OnInit, OnDestroy {
     if (initial) {
       this.currentDimension = this.dimensions[0];
     }
+
     const rows = res.find((dim) => dim.z === this.currentDimension)!.items;
     this.headers = rows[0].map(
       (cell) => cell[this.currentPayload.x] ?? ''
     ) as string[];
+
     this.rows = rows.map((row) => {
       return [
         row[0][this.currentPayload.y],

@@ -30,7 +30,7 @@
         <tr>
           @for (value of row; track $index) {
           <td [ngClass]="{ highlight: $index == 0 }">
-            {{ value ?? "-" }}
+            {{ value | round }}
           </td>
           }
         </tr>
@@ -89,5 +89,10 @@
   </div>
 </div>
 } @else if (this.tableDataLoading) {
-<p-progressSpinner class="w-12 h-12" strokeWidth="8"></p-progressSpinner>
+<div
+  style="height: 500px"
+  class="flex w-full justify-content-center align-items-center"
+>
+  <p-progressSpinner strokeWidth="8"></p-progressSpinner>
+</div>
 }
